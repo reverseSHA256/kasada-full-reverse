@@ -1,0 +1,42 @@
+
+KASADA PoW (x-kpsdk-cd) ALGORITHM ANALYSIS
+==========================================
+Source: p.js j-1.2.522 from Twitch (k.twitchcdn.net)
+Date: 2026-07-02
+
+BYTECODE STATISTICS:
+  Original bytecode: 76,487 integers
+  String table: 6,275 chars (extracted from indices 1927-8203)
+  Program bytecode: 70,210 integers (after string table removal)
+  Handler table: 89 opcodes
+  Cipher key: K=41 (affine cipher on low 6 bits)
+
+STRING TABLE KEY FINDINGS:
+  - tp-v2-input @ 214 (adjacent to kpsdkCt @ 207)
+  - x-kpsdk-cd @ 2869 (adjacent to encodedClientToken, KP_RC)
+  - sha256 @ 1231 (js-sha256 library embedded)
+  - hmac @ 3763
+  - cryptoChallengeEnabled @ 3591
+  - All JS_SHA256_NO_* guards present (Node/WINDOW/ARRAY_BUFFER detection)
+
+SHA-256 IMPLEMENTATION:
+  - js-sha256 library embedded in VM bytecode
+  - K[] round constants at indices ~13626-13820 (as IEEE 754 doubles, tag=4)
+  - H[] init values also present as doubles
+  - Uses DataView/setUint32 for byte manipulation
+  - Difficulty constant 2^52 at index 9592
+
+PoW ALGORITHM:
+  Parameters: difficulty=10 (qdw), rounds=2 (xqn)
+  Seed: "tp-v2-input" + vxn (VM-internal secret)
+  Hash: sha256(seed)
+  Chain: seed = hash.slice(0, 16) after each round
+  Difficulty: 2^52 / (parseInt(hash.slice(0,13),16) + 1) >= 10
+  
+CD TOKEN STRUCTURE:
+  {workTime, id, answers, duration, d, st:0, rst:0}
+
+UNSOLVED: vxn (the VM-internal secret in the PoW seed)
+  - Not network-visible
+  - Updated each round
+  - Likely from server challenge or fingerprint derivation

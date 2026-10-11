@@ -1,0 +1,29 @@
+# macOS metadata
+.DS_Store
+._*
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local credentials and environment configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+request.local.json
+
+# Private traffic captures and generated fingerprints
+*.har
+*.har.gz
+fingerprint_captured*.json
+fingerprint_captured*.py
+fingerprint_decoded*.json
+decoded_fingerprint*.json
+*.log

@@ -1,0 +1,5 @@
+# Use consistent line endings for maintained code and documentation.
+* text=auto eol=lf
+
+# Preserve the original research source artifacts byte for byte.
+01_source/* -text
