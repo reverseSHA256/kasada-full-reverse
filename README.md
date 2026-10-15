@@ -1,6 +1,6 @@
 # Kasada Full Reverse
 
-**Historical reverse-engineering research, bytecode analysis, and experimental Python implementations for Kasada `p.js` version `j-1.2.522`.**
+** reverse-engineering research, bytecode analysis, and experimental Python implementations for Kasada `p.js` version `j-1.2.522`.**
 
 > **Project status: outdated — updates required.** This repository preserves research against an older script snapshot. Its bytecode addresses, opcode mappings, extracted constants, fingerprint assumptions, and HTTP examples are specific to that snapshot. The project requires renewed analysis and implementation updates before use with current integrations. Current live compatibility has not been verified.
 
