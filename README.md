@@ -2,15 +2,15 @@
 
 ** reverse-engineering research, bytecode analysis, and experimental Python implementations for Kasada `p.js` version `j-1.2.522`.**
 
-> **Project status: outdated — updates required.** This repository preserves research against an older script snapshot. Its bytecode addresses, opcode mappings, extracted constants, fingerprint assumptions, and HTTP examples are specific to that snapshot. The project requires renewed analysis and implementation updates before use with current integrations. Current live compatibility has not been verified.
+> **Project status: outdated — updates required.** This repository preserves research against an older script snapshot. Its bytecode addresses, opcode mappings, extracted constants, fingerprint assumptions, and protocol experiments are historical and may no longer match current Kasada behavior.
 
 ## Overview
 
 `kasada-full-reverse` documents an investigation into the virtual machine, encoded bytecode, fingerprint payloads, proof-of-work routines, and request headers found in a historical Kasada integration.
 
-The repository brings together the original JavaScript snapshot, extracted bytecode and strings, multiple generations of disassemblers, focused tracing scripts, generated disassembly, and experimental Python solver interfaces. It preserves the research process as well as its results, including early interpretations that were later corrected.
+The repository brings together the original JavaScript snapshot, extracted bytecode and strings, multiple generations of disassemblers, focused tracing scripts, generated disassembly, and experimental Python implementations.
 
-The core reverse-engineering work uses static inspection: reading the interpreter, reconstructing operand decoding, following register and scope operations, and tracing data through the bytecode. Separate network and capture utilities explore the surrounding HTTP protocol.
+The core reverse-engineering work uses static inspection: reading the interpreter, reconstructing operand decoding, following register and scope operations, and tracing data through the bytecode.
 
 The repository name describes the scope of the investigation. It does not indicate that every component is complete or compatible with current Kasada versions.
 
@@ -40,7 +40,7 @@ For the GitHub About field:
 | Testing utilities | HAR inspection and token-comparison experiments | Original HAR files are absent; sensitive fixtures are sanitized |
 | Documentation | Research notes, architectural descriptions, and implementation guide | Historical files contain superseded conclusions |
 
-**Maintenance state:** this is an outdated research archive with experimental implementations. It needs updates to source artifacts, paths, dependency versions, protocol assumptions, and validation coverage.
+**Maintenance state:** this is an outdated research archive with experimental implementations. It needs updates to source artifacts, paths, dependency versions, protocol assumptions, and validation notes.
 
 ## Repository Structure
 
@@ -48,6 +48,7 @@ For the GitHub About field:
 kasada-full-reverse/
 ├── README.md
 ├── .gitignore
+├── LICENSE
 ├── 01_source/
 │   ├── p.js
 │   ├── vm_section.js
@@ -107,13 +108,13 @@ The local working directory may still be named `organized`. The GitHub repositor
 
 The starting point is the historical `p.js` snapshot in [01_source](01_source/). The directory contains an interpreter excerpt, extracted numeric arrays, a handler table, and a decoded string table.
 
-`program_bytecode.json` is the input used by the Python disassemblers. Keep it paired with the matching string table and interpreter snapshot; combining artifacts from different versions can produce misleading output.
+`program_bytecode.json` is the input used by the Python disassemblers. Keep it paired with the matching string table and interpreter snapshot; combining artifacts from different versions can produce misleading results.
 
 ### 2. Reconstruct the virtual machine
 
 The analysis follows a register-based interpreter whose dispatch table maps numeric opcodes to JavaScript handlers.
 
-The later research describes 87 handlers. Earlier notes describe a different count because the first extraction method split nested function literals incorrectly. The handler-fixing script demonstrates why balanced-brace parsing matters when reconstructing a table from obfuscated JavaScript.
+The later research describes 87 handlers. Earlier notes describe a different count because the first extraction method split nested function literals incorrectly. The handler-fixing script demonstrates the reconstruction problem.
 
 The investigation also separates ordinary operands from destination-register bytes. Consuming these fields in the wrong order shifts the instruction pointer and corrupts subsequent decoding.
 
@@ -137,7 +138,7 @@ These mappings belong to the recorded interpreter. They must be derived again if
 
 The scripts in [03_analysis](03_analysis/) inspect scope operations, configuration assignments, cryptographic references, and the proof-of-work region.
 
-One documented correction concerns `vxn`: later notes identify it as a configuration object containing `qdw`, `xqn`, and `zsr`. Earlier notes treat it as an unresolved secret. Both stages are retained so readers can see how the interpretation changed.
+One documented correction concerns `vxn`: later notes identify it as a configuration object containing `qdw`, `xqn`, and `zsr`. Earlier notes treat it as an unresolved secret. Both stages are retained in the archive as historical notes.
 
 ### 5. Reconstruct the offline computation
 
@@ -176,9 +177,9 @@ Local PoW ──► construct x-kpsdk-cd
 Return or attach the historical x-kpsdk-* header set
 ```
 
-The server prototype first attempts to extract a version and XOR key from `p.js`. This limited detection does not refresh opcode mappings, fingerprint schemas, challenge semantics, or token validation.
+The server prototype first attempts to extract a version and XOR key from `p.js`. This limited detection does not refresh opcode mappings, fingerprint schemas, challenge semantics, or token validity rules.
 
-Later HTTP implementations obtain `x-kpsdk-h` from the server. The legacy PoW module contains a local HMAC experiment that reflects an earlier interpretation. The archive does not establish that either interpretation applies to current deployments.
+Later HTTP implementations obtain `x-kpsdk-h` from the server. The legacy PoW module contains a local HMAC experiment that reflects an earlier interpretation. The archive does not establish that those assumptions remain valid for current script versions.
 
 ## Components and Responsibilities
 
@@ -227,7 +228,7 @@ See [the solver guide](05_solver/README.md) for interfaces, examples, and troubl
 
 The offline PoW demonstration uses only Python's standard library. Network tools additionally import `wreq`; the HTTP server imports `fastapi`, `pydantic`, and `uvicorn`. Proxy capture mode imports `mitmproxy`.
 
-There is no dependency lockfile or declared, tested package-version matrix. Use an isolated environment and verify that your installed `wreq` exposes the `Client`, `Emulation`, and `Jar` interfaces referenced by the source.
+There is no dependency lockfile or declared, tested package-version matrix. Use an isolated environment and verify that your installed `wreq` exposes the `Client`, `Emulation`, and `Jar` interfaces expected by the archived code.
 
 ### Create an environment
 
@@ -338,7 +339,7 @@ Historical headings such as “working,” “solved,” and “complete” desc
 
 ## Verification
 
-During repository preparation, the standalone `kasada_solver.py` demonstration completed successfully under Python 3.14.8. Its generated proof was also checked independently against the historical SHA-256 calculation and difficulty condition.
+During repository preparation, the standalone `kasada_solver.py` demonstration completed successfully under Python 3.14.8. Its generated proof was also checked independently against the historical algorithm.
 
 This verification covers the offline PoW computation only. Network dependencies, HTTP flows, capture integrations, and live acceptance were not validated.
 
@@ -346,12 +347,14 @@ This verification covers the offline PoW computation only. Network dependencies,
 
 Maintenance contributions should identify the script snapshot they target, explain the observed behavior, and include reproducible evidence for substantive algorithm changes.
 
-Keep captured traffic, account credentials, proxy credentials, and session tokens outside the repository. Use synthetic or sanitized fixtures in published examples. The ignore rules exclude HAR captures, common fingerprint captures, environment files, caches, and virtual environments.
+Keep captured traffic, account credentials, proxy credentials, and session tokens outside the repository. Use synthetic or sanitized fixtures in published examples. The ignore rules exclude HAR captures and local config files from git tracking.
 
 Existing historical findings should be corrected with clear version context so that readers can distinguish the original observation from the maintained interpretation.
 
 ## License and Attribution
 
-No license file is currently included. A repository license has not been selected, and the included third-party script snapshot may carry separate terms.
+This repository is licensed under the MIT License. See [LICENSE](LICENSE) for the full text.
 
-This is an independent research repository. No affiliation with or endorsement by Kasada, Twitch, or any other referenced service is claimed.
+The included source materials, documentation, and Python experiments are historical research artifacts for analysis and educational reverse-engineering. This project is not affiliated with, sponsored by, or endorsed by Kasada, Twitch, or any other referenced service.
+
+If a third-party file or source snapshot in this archive carries separate terms, those terms remain in effect and should be reviewed before reuse beyond the repository's MIT-licensed code.
